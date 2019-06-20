@@ -208,19 +208,53 @@ def plot_clementi_screening(name, ax=None, **kwargs):
     ax.legend(fontsize=14, loc='lower right', shadow=True, fancybox=True)
 
 
-'''
 def plot_slater_both(name, ax=None):
+    plot_param(ax)
+    x = elem_data(name)['Orbital']
+    y = elem_data(name)['Zef Slater']
+    ax.set_ylabel('Carga nuclear efetiva', size=15, color='blue')
+    ax.set_xlabel('Orbitais', size=15)
+    line1 = ax.plot(x, y, linewidth=4, label='Zef Slater {0}'.format(
+        element(name).symbol), color='blue')
+    ax.set_xticks = ([i for i in range(len(elem_data(name).index))])
+    ax.set_yticks(np.linspace(0, round(ax.get_ybound()[1] + 1), 5))
 
-fazer função para plotar dois gráficos, um eixo Zef e o outro blindagem.
-Colorir eixos diferente
+    ax2 = ax.twinx()
+    plot_param(ax2)
+    y2 = elem_data(name)['% S Slater']
+    line2 = ax2.plot(x, y2, linewidth=4, label='Blindagem % Slater {0}'.format(
+        element(name).symbol), color='red')
+    ax2.set_ylabel('Blindagem / %', size=15, color='red')
+    ax2.set_yticks(np.linspace(0, round(ax2.get_ybound()[1] + 1), 5))
+
+    lines = line1 + line2
+    labels = [l.get_label() for l in lines]
+
+    ax2.legend(lines, labels, fontsize=14,
+               loc='upper center', shadow=True, fancybox=True)
+
 
 def plot_clementi_both(name, ax=None):
+    plot_param(ax)
+    x = elem_data(name)['Orbital']
+    y = elem_data(name)['Zef Clementi']
+    ax.set_ylabel('Carga nuclear efetiva', size=15, color='blue')
+    ax.set_xlabel('Orbitais', size=15)
+    line1 = ax.plot(x, y, linewidth=4, label='Zef Clementi {0}'.format(
+        element(name).symbol), color='blue')
+    ax.set_xticks = ([i for i in range(len(elem_data(name).index))])
+    ax.set_yticks(np.linspace(0, round(ax.get_ybound()[1] + 1), 5))
 
-fazer função para plotar dois gráficos, um eixo Zef e o outro blindagem
+    ax2 = ax.twinx()
+    plot_param(ax2)
+    y2 = elem_data(name)['% S Clementi']
+    line2 = ax2.plot(x, y2, linewidth=4, label='Blindagem % Clementi {0}'.format(
+        element(name).symbol), color='red')
+    ax2.set_ylabel('Blindagem / %', size=15, color='red')
+    ax2.set_yticks(np.linspace(0, round(ax2.get_ybound()[1] + 1), 5))
 
-def plot_both
+    lines = line1 + line2
+    labels = [l.get_label() for l in lines]
 
-fazer função para traçar 4 gráficos: dois para Zef (Slater e Clementi, linhas
-cheias, azuis, eixo esquerda)
-e dois para blindagem (idem, linhas vermelhas, tracejadas, eixo direita).
-'''
+    ax2.legend(lines, labels, fontsize=14,
+               loc='upper center', shadow=True, fancybox=True)
