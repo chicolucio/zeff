@@ -20,7 +20,7 @@ Look at some examples at the [tutorial](Zeff_tutorial.ipynb) available as a [Jup
 
 ## Under the hood - Requirements
 
-This project relies heavily on [`mendeleev`](https://pypi.org/project/mendeleev/), [`pandas`](https://pandas.pydata.org/) and [`matplotlib`](https://matplotlib.org/) packages so these must be installed. Check the `environment.yml` file for requirements and feel free to use it to create a virtual environment with [`conda`](https://docs.conda.io/en/latest/) or other similar tool.
+This project relies heavily on [`mendeleev`](https://pypi.org/project/mendeleev/), [`pandas`](https://pandas.pydata.org/) and [`matplotlib`](https://matplotlib.org/) packages so these must be installed. Check the [`environment.yml`](environment.yml) file for requirements and feel free to use it to create a virtual environment with [`conda`](https://docs.conda.io/en/latest/) or other similar tool.
 
 
 ## Contributing
