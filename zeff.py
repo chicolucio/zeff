@@ -264,8 +264,8 @@ def plot_clementi_zef(name, ax=None, **kwargs):
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 5.0))
     ax.plot(x, y, linewidth=linewidth, label='Zef Clementi {0}'.format(
         element(name).symbol), **kwargs)
-    ax.legend(fontsize=fontsize - 1, loc='upper right',
-              shadow=True, fancybox=True)
+    ax.legend(fontsize=fontsize - 1, loc='best', shadow=False, fancybox=True,
+              bbox_to_anchor=(1, 1))
 
 
 def plot_clementi_screening(name, ax=None, **kwargs):
@@ -297,8 +297,7 @@ def plot_clementi_screening(name, ax=None, **kwargs):
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 10.0))
     ax.plot(x, y, linewidth=linewidth, label='Shielding % Clementi {0}'.format(
         element(name).symbol), **kwargs)
-    ax.legend(fontsize=fontsize - 1, loc='lower right',
-              shadow=True, fancybox=True)
+    ax.legend(fontsize=fontsize - 2, loc='best', shadow=True, fancybox=True)
 
 
 def plot_slater_both(name, ax=None):
