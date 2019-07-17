@@ -48,13 +48,13 @@ Feel free to submit issues regarding:
 
 ## License
 
-MIT, see LICENSE (TODO link)
+MIT, see [LICENSE](LICENSE)
 
 ## Citing
 
 If you use Z<sub>eff</sub> in a scientific publication or in classes, please consider citing as
 
-F. L. S. Bustamante, *Z<sub>eff</sub>* - An effective nuclear charge (Z<sub>eff</sub>) and shielding (S) calculator and graphing tool., 2019 - Available at: TODO link
+F. L. S. Bustamante, *Z<sub>eff</sub>* - An effective nuclear charge (Z<sub>eff</sub>) and shielding (S) calculator and graphing tool., 2019 - Available at: https://github.com/chicolucio/zeff
 
 ## Funding
 
