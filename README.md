@@ -1,4 +1,4 @@
-# Zeff
+# Z<sub>eff</sub>
 
 An effective nuclear charge (Z<sub>eff</sub>) and shielding (S) calculator and graphing tool.
 
@@ -16,7 +16,7 @@ Just clone or download this repo. This is not a package (yet, maybe someday :-))
 
 ## Usage
 
-Look at some examples at the tutorial available as a [Jupyter notebook](https://jupyter.org/). (TODO internal link)
+Look at some examples at the [tutorial](Zeff_tutorial.ipynb) available as a [Jupyter notebook](https://jupyter.org/).
 
 ## Under the hood - Requirements
 
