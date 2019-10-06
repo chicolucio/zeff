@@ -58,6 +58,4 @@ F. L. S. Bustamante, *Z<sub>eff</sub>* - An effective nuclear charge (Z<sub>eff<
 
 ## Funding
 
-If you enjoy this project and would like to see many more science related programming projects, I would greatly appreciate any assistance. Below is my BTC address. Many more projects are to come and your support will be rewarded with more science coding projects :-)
-
-BTC address: 13v7T1xCQ6qMT8b5zCSz3kGqaXMG9Gc8HB
+If you enjoy this project and would like to see many more science related programming projects, I would greatly appreciate any assistance. Send me an e-mail to know how to assist. Many more projects are to come and your support will be rewarded with more science coding projects :-)
