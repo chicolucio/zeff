@@ -168,9 +168,11 @@ def plot_param(ax=None):
     """
     ax.axhline(color="gray", zorder=-1)
     ax.axvline(color="gray", zorder=-1)
-    ax.grid(b=True, which="major", linestyle=":", linewidth=2)
+    # ax.grid(b=True, which="major", linestyle=":", linewidth=2)
+    ax.grid(which="major", linestyle=":", linewidth=2)
     ax.minorticks_on()
-    ax.grid(b=True, which="minor", axis="y", linestyle=":", linewidth=1.0)
+    # ax.grid(b=True, which="minor", axis="y", linestyle=":", linewidth=1.0)
+    ax.grid(which="minor", axis="y", linestyle=":", linewidth=1.0)
     ax.tick_params(which="both", labelsize=14)
 
 
