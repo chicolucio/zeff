@@ -1,42 +1,54 @@
+from typing import List, NamedTuple
+
 import numpy as np
 import pandas as pd
 from mendeleev import element
+from sqlalchemy.exc import NoResultFound
 
 
-def orbitals(name):
+class OrbitalsInfo(NamedTuple):
+    orbital: List[str]
+    principal_quantum_number: List[int]
+    orbital_letter: List[str]
+    azimuthal_quantum_number: List[int]
+
+
+def orbitals(name: str) -> OrbitalsInfo:
     """Extracts n, l, and nl notation from electronic configuration info of
-    Mendeleev package.
+    the Mendeleev package.
 
     Parameters
     ----------
-    name : string
+    name : str
         Name or symbol for the chemical element.
 
     Returns
     -------
-    lists
-        Lists with orbital representation; quantrum principal number; orbital
-        letter notation and quantum azimutal number.
-    """
-    elem = element(name)
-    orbital_n = []
-    orbital_l = []
+    OrbitalsInfo
+        A NamedTuple containing lists with orbital representation (nl notation),
+        principal quantum number (n), orbital letter notation (l), and
+        azimuthal quantum number.
 
-    for k, _ in elem.ec.conf.items():
-        orbital_n.append(k[0])
-        orbital_l.append(k[1])
+    Raises
+    ------
+    NoResultFound
+        If the provided element name or symbol is not valid.
+    """
+    try:
+        elem = element(name)
+    except NoResultFound as e:
+        raise NoResultFound(f"Invalid element name or symbol: {name}") from e
 
     dict_l = {"s": 0, "p": 1, "d": 2, "f": 3}
-    orbital_l_num = []
-    for i in orbital_l:
-        if i in dict_l:
-            orbital_l_num.append(dict_l[i])
+    orbital, orbital_n, orbital_l, orbital_l_num = [], [], [], []
 
-    orbital = []
-    for i in range(len(orbital_n)):
-        orbital.append(str(orbital_n[i]) + orbital_l[i])
+    for (n, l), _ in elem.ec.conf.items():
+        orbital_n.append(n)
+        orbital_l.append(l)
+        orbital_l_num.append(dict_l.get(l, -1))
+        orbital.append(f"{n}{l}")
 
-    return orbital, orbital_n, orbital_l, orbital_l_num
+    return OrbitalsInfo(orbital, orbital_n, orbital_l, orbital_l_num)
 
 
 def slater(name):
