@@ -13,6 +13,12 @@ class OrbitalsInfo(NamedTuple):
     azimuthal_quantum_number: List[int]
 
 
+class SlaterInfo(NamedTuple):
+    effective_nuclear_charge: list
+    screening_values: list
+    screening_percentage: list
+
+
 def orbitals(name: str) -> OrbitalsInfo:
     """Extracts n, l, and nl notation from electronic configuration info of
     the Mendeleev package.
@@ -51,37 +57,35 @@ def orbitals(name: str) -> OrbitalsInfo:
     return OrbitalsInfo(orbital, orbital_n, orbital_l, orbital_l_num)
 
 
-def slater(name):
-    """In quantum chemistry, Slater's rules provide numerical values for the
-    effective nuclear charge concept. In a many-electron atom, each electron is
-    said to experience less than the actual nuclear charge owing to shielding
-    or screening by the other electrons.
+def slater(name: str) -> SlaterInfo:
+    """Calculates Slater's screening values, effective nuclear charge, and
+    screening percentages for each orbital of an element's electronic configuration.
 
     Parameters
     ----------
-    name : string
+    name : str
         Name or symbol for the chemical element.
 
     Returns
     -------
-    type list
-        Three lists. The first one with the screening values, the second with
-        the effective nuclear charge values and the third one with the
-        screening percentage for each orbital of the electronic configuration
-        of the element.
-
+    SlaterInfo
+        A NamedTuple containing lists of effective nuclear charge values,
+        screening values, and screening percentages for each orbital.
     """
+    orbital_info = orbitals(name)
     elem = element(name)
-    slater_s = []
-    zeff_slater = []
 
-    for k, _ in elem.ec.conf.items():
-        slater_s.append(elem.ec.slater_screening(k[0], k[1]))
-        zeff_slater.append(elem.atomic_number - elem.ec.slater_screening(k[0], k[1]))
+    zeff_slater = []
+    slater_s = []
+
+    for n, l in zip(orbital_info.principal_quantum_number, orbital_info.orbital_letter):
+        screening = elem.ec.slater_screening(n, l)
+        slater_s.append(screening)
+        zeff_slater.append(elem.atomic_number - screening)
 
     slater_s_percent = [(i / elem.atomic_number) * 100 for i in slater_s]
 
-    return slater_s, zeff_slater, slater_s_percent
+    return SlaterInfo(zeff_slater, slater_s, slater_s_percent)
 
 
 def clementi(name):
@@ -139,7 +143,7 @@ def elem_data(name):
         screening values.
     """
 
-    slater_s, zeff_slater, slater_s_percent = slater(name)
+    zeff_slater, slater_s, slater_s_percent = slater(name)
     clementi_s, zeff_clementi, clementi_s_percent = clementi(name)
     orbital, orbital_n, orbital_l, orbital_l_num = orbitals(name)
 
