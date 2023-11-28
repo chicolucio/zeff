@@ -19,6 +19,12 @@ class SlaterInfo(NamedTuple):
     screening_percentage: list
 
 
+class ClementiInfo(NamedTuple):
+    effective_nuclear_charge: list
+    screening_values: list
+    screening_percentage: list
+
+
 def orbitals(name: str) -> OrbitalsInfo:
     """Extracts n, l, and nl notation from electronic configuration info of
     the Mendeleev package.
@@ -88,44 +94,42 @@ def slater(name: str) -> SlaterInfo:
     return SlaterInfo(zeff_slater, slater_s, slater_s_percent)
 
 
-def clementi(name):
-    """In a many-electron atom, each electron is said to experience less than
-    the actual nuclear charge owing to shielding or screening by the other
-    electrons. This functions calculates screening and effective nuclear charge
-    based on screening values calculate by Clementi and Raimond with SCF
-    algorithms. No values for Z > 86.
+def clementi(name: str) -> ClementiInfo:
+    """Calculates screening and effective nuclear charge based on values
+    calculated by Clementi and Raimond. No values for Z > 86.
 
     Parameters
     ----------
-    name : string
+    name : str
         Name or symbol for the chemical element.
 
     Returns
     -------
-    lists
-        Three lists. The first one with the screening values, the second with
-        the effective nuclear charge values and the third one with the
-        screening percentage for each orbital of the electronic configuration
-        of the element.
+    ClementiInfo
+        A NamedTuple containing lists of effective nuclear charge values,
+        screening values, and screening percentages for each orbital.
     """
+
+    orbital_info = orbitals(name)
     elem = element(name)
-    clementi_s = []
     zeff_clementi = []
+    clementi_s = []
 
     if elem.atomic_number < 87:
-        for k, _ in elem.ec.conf.items():
-            clementi_s.append(
-                elem.atomic_number - elem.zeff(k[0], k[1], method="clementi")
-            )
-            zeff_clementi.append(elem.zeff(k[0], k[1], method="clementi"))
+        for n, l in zip(
+            orbital_info.principal_quantum_number, orbital_info.orbital_letter
+        ):
+            screening = elem.atomic_number - elem.zeff(n, l, method="clementi")
+            clementi_s.append(screening)
+            zeff_clementi.append(elem.zeff(n, l, method="clementi"))
     else:
-        for _ in range(len(orbitals.orbital_n)):
+        for _ in orbital_info.principal_quantum_number:
             clementi_s.append(np.nan)
             zeff_clementi.append(np.nan)
 
     clementi_s_percent = [(i / elem.atomic_number) * 100 for i in clementi_s]
 
-    return clementi_s, zeff_clementi, clementi_s_percent
+    return ClementiInfo(zeff_clementi, clementi_s, clementi_s_percent)
 
 
 def elem_data(name):
@@ -144,7 +148,7 @@ def elem_data(name):
     """
 
     zeff_slater, slater_s, slater_s_percent = slater(name)
-    clementi_s, zeff_clementi, clementi_s_percent = clementi(name)
+    zeff_clementi, clementi_s, clementi_s_percent = clementi(name)
     orbital, orbital_n, orbital_l, orbital_l_num = orbitals(name)
 
     data = pd.DataFrame(
