@@ -132,37 +132,36 @@ def clementi(name: str) -> ClementiInfo:
     return ClementiInfo(zeff_clementi, clementi_s, clementi_s_percent)
 
 
-def elem_data(name):
+def elem_data(name: str) -> pd.DataFrame:
     """Data summary for a given element.
 
     Parameters
     ----------
-    name : string
+    name : str
         Name or symbol for the chemical element.
 
     Returns
     -------
-    Pandas DataFrame.
+    pd.DataFrame
         Summary of Zeff and S for a given element with Slater and Clementi
         screening values.
     """
-
-    zeff_slater, slater_s, slater_s_percent = slater(name)
-    zeff_clementi, clementi_s, clementi_s_percent = clementi(name)
-    orbital, orbital_n, orbital_l, orbital_l_num = orbitals(name)
+    slater_info = slater(name)
+    clementi_info = clementi(name)
+    orbital_info = orbitals(name)
 
     data = pd.DataFrame(
-        data={
-            "n": orbital_n,
-            "l": orbital_l,
-            "l_num": orbital_l_num,
-            "Orbital": orbital,
-            "S Slater": slater_s,
-            "% S Slater": slater_s_percent,
-            "Zef Slater": zeff_slater,
-            "S Clementi": clementi_s,
-            "% S Clementi": clementi_s_percent,
-            "Zef Clementi": zeff_clementi,
+        {
+            "n": orbital_info.principal_quantum_number,
+            "l": orbital_info.orbital_letter,
+            "l_num": orbital_info.azimuthal_quantum_number,
+            "Orbital": orbital_info.orbital,
+            "Zef Slater": slater_info.effective_nuclear_charge,
+            "S Slater": slater_info.screening_values,
+            "% S Slater": slater_info.screening_percentage,
+            "Zef Clementi": clementi_info.effective_nuclear_charge,
+            "S Clementi": clementi_info.screening_values,
+            "% S Clementi": clementi_info.screening_percentage,
         }
     )
 
