@@ -11,10 +11,10 @@ def test_valid_element():
         "l",
         "l_num",
         "Orbital",
-        "Zef Slater",
+        "Zeff Slater",
         "S Slater",
         "% S Slater",
-        "Zef Clementi",
+        "Zeff Clementi",
         "S Clementi",
         "% S Clementi",
     ]

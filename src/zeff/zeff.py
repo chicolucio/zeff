@@ -1,9 +1,16 @@
-from typing import List, NamedTuple
+from pathlib import Path
+from typing import List, NamedTuple, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.axes import Axes
 from mendeleev import element
 from sqlalchemy.exc import NoResultFound
+
+script_path = Path(__file__).parent.absolute()
+
+plt.style.use(str("/".join([str(script_path), "plots.mplstyle"])))
 
 
 class OrbitalsInfo(NamedTuple):
@@ -156,10 +163,10 @@ def elem_data(name: str) -> pd.DataFrame:
             "l": orbital_info.orbital_letter,
             "l_num": orbital_info.azimuthal_quantum_number,
             "Orbital": orbital_info.orbital,
-            "Zef Slater": slater_info.effective_nuclear_charge,
+            "Zeff Slater": slater_info.effective_nuclear_charge,
             "S Slater": slater_info.screening_values,
             "% S Slater": slater_info.screening_percentage,
-            "Zef Clementi": clementi_info.effective_nuclear_charge,
+            "Zeff Clementi": clementi_info.effective_nuclear_charge,
             "S Clementi": clementi_info.screening_values,
             "% S Clementi": clementi_info.screening_percentage,
         }
@@ -170,306 +177,266 @@ def elem_data(name: str) -> pd.DataFrame:
     return data_org
 
 
-def plot_param(ax=None):
-    """Common plot parameters.
-
-    Parameters
-    ----------
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
-
-    Returns
-    -------
-    None
-        Should be called inside a plot function in order to apply the
-        parameters.
-
-    """
-    ax.axhline(color="gray", zorder=-1)
-    ax.axvline(color="gray", zorder=-1)
-    # ax.grid(b=True, which="major", linestyle=":", linewidth=2)
-    ax.grid(which="major", linestyle=":", linewidth=2)
-    ax.minorticks_on()
-    # ax.grid(b=True, which="minor", axis="y", linestyle=":", linewidth=1.0)
-    ax.grid(which="minor", axis="y", linestyle=":", linewidth=1.0)
-    ax.tick_params(which="both", labelsize=14)
-
-
-def plot_slater_zef(name, ax=None, **kwargs):
+def plot_slater_zeff(name: str, ax=None, **kwargs) -> Axes:
     """Plots effective nuclear charge (Slater) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
-    **kwargs : string
-        kwargs for plot parameters.
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
+    **kwargs
+        Additional keyword arguments for the plot.
 
     Returns
     -------
-    None
-        Plot.
-
+    matplotlib.axes._subplots.AxesSubplot
+        The Axes object with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["Zef Slater"]
-    ax.set_ylabel("Effective nuclear charge", size=fontsize)
-    ax.set_xlabel("Orbitals", size=fontsize)
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
+
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["Zeff Slater"]
+
+    ax.set_ylabel("Effective nuclear charge")
+    ax.set_xlabel("Orbitals")
+    ax.set_xticks(range(len(data)))
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 5.0))
-    ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Zef Slater {element(name).symbol}",
-        **kwargs,
-    )
+
+    ax.plot(x, y, label=f"Zeff Slater {element(name).symbol}", **kwargs)
     ax.legend(
-        fontsize=fontsize - 1,
         loc="best",
         shadow=False,
         fancybox=True,
         bbox_to_anchor=(1, 1),
     )
 
+    return ax
 
-def plot_slater_screening(name, ax=None, **kwargs):
+
+def plot_slater_screening(name: str, ax=None, **kwargs) -> Axes:
     """Plots Shielding /% (Slater) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
-    **kwargs : string
-        kwargs for plot parameters.
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
+    **kwargs
+        Additional keyword arguments for the plot.
 
     Returns
     -------
-    None
-        Plot.
-
+    matplotlib.axes._subplots.AxesSubplot
+        The Axes object with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["% S Slater"]
-    ax.set_ylabel("Shielding / %", size=fontsize)
-    ax.set_xlabel("Orbitals", size=fontsize)
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
+
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["% S Slater"]
+
+    ax.set_ylabel("Shielding / %")
+    ax.set_xlabel("Orbitals")
+    ax.set_xticks(range(len(data)))
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 10.0))
-    ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Shielding % Slater {element(name).symbol}",
-        **kwargs,
-    )
-    ax.legend(fontsize=fontsize - 2, loc="best", shadow=True, fancybox=True)
+
+    ax.plot(x, y, label=f"Shielding % Slater {element(name).symbol}", **kwargs)
+    ax.legend(loc="best", shadow=True, fancybox=True)
+
+    return ax
 
 
-def plot_clementi_zef(name, ax=None, **kwargs):
+def plot_clementi_zeff(name: str, ax=None, **kwargs) -> Axes:
     """Plots effective nuclear charge (Clementi) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
-    **kwargs : string
-        kwargs for plot parameters.
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
+    **kwargs
+        Additional keyword arguments for the plot.
 
     Returns
     -------
-    None
-        Plot.
-
+    matplotlib.axes._subplots.AxesSubplot
+        The Axes object with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["Zef Clementi"]
-    ax.set_ylabel("Effective nuclear charge", size=fontsize)
-    ax.set_xlabel("Orbitals", size=fontsize)
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
+
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["Zeff Clementi"]
+
+    ax.set_ylabel("Effective nuclear charge")
+    ax.set_xlabel("Orbitals")
+    ax.set_xticks(range(len(data)))
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 5.0))
-    ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Zef Clementi {element(name).symbol}",
-        **kwargs,
-    )
-    ax.legend(
-        fontsize=fontsize - 1,
-        loc="best",
-        shadow=False,
-        fancybox=True,
-        bbox_to_anchor=(1, 1),
-    )
+
+    ax.plot(x, y, label=f"Zef Clementi {element(name).symbol}", **kwargs)
+    ax.legend(loc="best", shadow=False, fancybox=True, bbox_to_anchor=(1, 1))
+
+    return ax
 
 
-def plot_clementi_screening(name, ax=None, **kwargs):
+def plot_clementi_screening(name: str, ax=None, **kwargs) -> Axes:
     """Plots Shielding /% (Clementi) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
-    **kwargs : string
-        kwargs for plot parameters.
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
+    **kwargs
+        Additional keyword arguments for the plot.
 
     Returns
     -------
-    None
-        Plot.
-
+    matplotlib.axes._subplots.AxesSubplot
+        The Axes object with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["% S Clementi"]
-    ax.set_ylabel("Shielding / %", size=fontsize)
-    ax.set_xlabel("Orbitals", size=fontsize)
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
+
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["% S Clementi"]
+
+    ax.set_ylabel("Shielding / %")
+    ax.set_xlabel("Orbitals")
+    ax.set_xticks(range(len(data)))
     ax.set_yticks(np.arange(0, round(max(y)) + 5, 10.0))
-    ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Shielding % Clementi {element(name).symbol}",
-        **kwargs,
-    )
-    ax.legend(fontsize=fontsize - 2, loc="best", shadow=True, fancybox=True)
+
+    ax.plot(x, y, label=f"Shielding % Clementi {element(name).symbol}", **kwargs)
+    ax.legend(loc="best", shadow=True, fancybox=True)
+
+    return ax
 
 
-def plot_slater_both(name, ax=None):
+def plot_slater_both(name: str, ax=None) -> Tuple[Axes, Axes]:
     """Plots Effective nuclear charge and shielding /% (Slater) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
 
     Returns
     -------
-    None
-        Plot.
-
+    Tuple[matplotlib.axes._subplots.AxesSubplot, matplotlib.axes._subplots.AxesSubplot]
+        The Axes objects with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["Zef Slater"]
-    ax.set_ylabel("Effective nuclear charge", size=fontsize, color="blue")
-    ax.set_xlabel("Orbitals", size=fontsize)
-    line1 = ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Zef Slater {element(name).symbol}",
-        color="blue",
-    )
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
-    ax.set_yticks(np.linspace(0, round(ax.get_ybound()[1] + 1), 5))
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["Zeff Slater"]
+    ax.set_ylabel("Effective nuclear charge", color="C0")
+    ax.set_xlabel("Orbitals")
+    line1 = ax.plot(x, y, label=f"Zef Slater {element(name).symbol}", color="C0")
+    for t in ax.get_yticklabels():
+        t.set_color("C0")
+    ax.set_xticks(range(len(data)))
+    ax.set_yticks(np.linspace(0, round(max(y)) + 1, 5))
 
     ax2 = ax.twinx()
-    plot_param(ax2)
-    y2 = elem_data(name)["% S Slater"]
+    y2 = data["% S Slater"]
     line2 = ax2.plot(
         x,
         y2,
-        linewidth=linewidth,
-        linestyle="--",
         label=f"Shielding % Slater {element(name).symbol}",
-        color="red",
+        color="C1",
     )
-    ax2.set_ylabel("Shielding / %", size=fontsize, color="red")
-    ax2.set_yticks(np.linspace(0, round(ax2.get_ybound()[1] + 1), 5))
+    for t in ax2.get_yticklabels():
+        t.set_color("C1")
+    ax2.set_ylabel("Shielding / %", color="C1")
+    ax2.set_yticks(np.linspace(0, round(max(y2)) + 1, 5))
 
     lines = line1 + line2
     labels = [line.get_label() for line in lines]
 
-    ax2.legend(
-        lines,
-        labels,
-        fontsize=fontsize - 1,
-        loc="upper center",
-        shadow=True,
-        fancybox=True,
-    )
+    ax2.legend(lines, labels, loc="upper center", shadow=True, fancybox=True)
+
+    # keep only the vertical grids
+    ax.grid(visible=False)
+    ax2.grid(visible=False)
+    ax.grid(visible=True, which="major", axis="x")
+
+    return ax, ax2
 
 
-def plot_clementi_both(name, ax=None):
+def plot_clementi_both(name: str, ax=None) -> Tuple[Axes, Axes]:
     """Plots Effective nuclear charge and shielding /% (Clementi) per orbital.
 
     Parameters
     ----------
-    name : string
+    name : str
         String with the element symbol.
-    ax : matplotlib.axes
-        Axes for the plot (the default is None).
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes for the plot. If None, a new figure and axes object is created.
 
     Returns
     -------
-    None
-        Plot.
-
+    Tuple[matplotlib.axes._subplots.AxesSubplot, matplotlib.axes._subplots.AxesSubplot]
+        The Axes objects with the plot.
     """
-    plot_param(ax)
-    fontsize = 15
-    linewidth = 4
-    x = elem_data(name)["Orbital"]
-    y = elem_data(name)["Zef Clementi"]
-    ax.set_ylabel("Effective nuclear charge", size=fontsize, color="blue")
-    ax.set_xlabel("Orbitals", size=fontsize)
-    line1 = ax.plot(
-        x,
-        y,
-        linewidth=linewidth,
-        label=f"Zef Clementi {element(name).symbol}",
-        color="blue",
-    )
-    ax.set_xticks = [i for i in range(len(elem_data(name).index))]
-    ax.set_yticks(np.linspace(0, round(ax.get_ybound()[1] + 1), 5))
+    data = elem_data(name)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    x = data["Orbital"]
+    y = data["Zeff Clementi"]
+    ax.set_ylabel("Effective nuclear charge", color="C0")
+    ax.set_xlabel("Orbitals")
+    line1 = ax.plot(x, y, label=f"Zef Clementi {element(name).symbol}", color="C0")
+    for t in ax.get_yticklabels():
+        t.set_color("C0")
+    ax.set_xticks(range(len(data)))
+    ax.set_yticks(np.linspace(0, round(max(y)) + 1, 5))
 
     ax2 = ax.twinx()
-    plot_param(ax2)
-    y2 = elem_data(name)["% S Clementi"]
+    y2 = data["% S Clementi"]
     line2 = ax2.plot(
         x,
         y2,
-        linewidth=linewidth,
-        linestyle="--",
         label=f"Shielding % Clementi {element(name).symbol}",
-        color="red",
+        color="C1",
     )
-    ax2.set_ylabel("Shielding / %", size=fontsize, color="red")
-    ax2.set_yticks(np.linspace(0, round(ax2.get_ybound()[1] + 1), 5))
+    for t in ax2.get_yticklabels():
+        t.set_color("C1")
+    ax2.set_ylabel("Shielding / %", color="C1")
+    ax2.set_yticks(np.linspace(0, round(max(y2)) + 1, 5))
 
     lines = line1 + line2
     labels = [line.get_label() for line in lines]
 
-    ax2.legend(
-        lines,
-        labels,
-        fontsize=fontsize - 1,
-        loc="upper center",
-        shadow=True,
-        fancybox=True,
-    )
+    ax2.legend(lines, labels, loc="upper center", shadow=True, fancybox=True)
+
+    # keep only the vertical grids
+    ax.grid(visible=False)
+    ax2.grid(visible=False)
+    ax.grid(visible=True, which="major", axis="x")
+
+    return ax, ax2
