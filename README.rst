@@ -30,7 +30,7 @@ Z\ :subscript:`eff`
 
     An effective nuclear charge calculator.
 
-.. image:: images/zeff_plot.png
+.. image:: https://raw.githubusercontent.com/chicolucio/zeff/master/images/zeff_plot.png
    :alt: Image Zeff
 
 Introduction
