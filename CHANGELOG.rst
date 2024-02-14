@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.0.1
+=============
+
+- Fix CI and readme image
+
 Version 1.0.0
 =============
 
