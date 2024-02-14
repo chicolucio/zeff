@@ -1,0 +1,7 @@
+-r requirements.txt
+ipykernel==6.29.2
+pre-commit==3.6.1
+PyScaffold==4.5
+pytest==8.0.0
+pytest-cov==4.1.0
+tox==4.12.1
